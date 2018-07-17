@@ -51,13 +51,10 @@ public class ModularSpongeConstruction_Longs {
 				 xorIntoState(messageRateChunk);
 				 messageArrayList.clear();
 			 }
-			 printState();
 			 runRoundFunctionOnState();
-			 printState();
 		}
 	}
 	public String spongeSqueeze(int iterations) {
-		printState();
 		String retString = "";
 		for(int iteration = 0 ; iteration < iterations; iteration++) {
 			for(int i = 0 ; i < rateLongs; i++) {
