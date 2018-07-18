@@ -5,8 +5,11 @@ import main.CONSTANTS;
 
 public class ModularSpongeConstruction_Longs {
 	long[] state;
-	int rate, rateLongs;
-	int capacity, capacityLongs;
+	int rateLongs;
+	static int rate;
+	static int stateSize;
+	static int capacity;
+	int capacityLongs;
 	double geneticScore;
 	double bitchangeScore;
 	RoundFunction f;
@@ -18,6 +21,7 @@ public class ModularSpongeConstruction_Longs {
 		assert capacity % CONSTANTS.longSize == 0;
 		this.capacity = capacity/CONSTANTS.longSize;
 		assert rate+capacity == stateSize;
+		this.stateSize = stateSize;
 		this.state = new long[stateSize/CONSTANTS.longSize];
 		for(int i = 0 ; i < stateSize/CONSTANTS.longSize; i++) {
 			state[i]=0;
@@ -58,7 +62,11 @@ public class ModularSpongeConstruction_Longs {
 		String retString = "";
 		for(int iteration = 0 ; iteration < iterations; iteration++) {
 			for(int i = 0 ; i < rateLongs; i++) {
-				retString+=Long.toHexString(state[i]);
+				String rateChunk=Long.toBinaryString(state[i]+(0x7ffffffffffffffL));
+				while(rateChunk.length() < 64){
+					rateChunk="0"+rateChunk;
+				}
+				retString+=rateChunk;
 			}
 			retString+="\n";
 			runRoundFunctionOnState();
@@ -67,6 +75,11 @@ public class ModularSpongeConstruction_Longs {
 	}
 	private void runRoundFunctionOnState() {
 		state = f.runFunction(state);
+	}
+	public void spongePurge(){
+		for(int i = 0 ; i < stateSize/CONSTANTS.longSize; i++) {
+			state[i]=0;
+		}
 	}
 	private void printState() {
 		System.out.print("\n{");

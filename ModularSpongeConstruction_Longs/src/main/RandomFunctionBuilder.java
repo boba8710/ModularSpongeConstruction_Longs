@@ -11,6 +11,8 @@ public class RandomFunctionBuilder {
 		this.stateSize = stateSize;
 		this.funcCount = funcCount;
 	}
+	public RandomFunctionBuilder() {
+	}
 	public String genRandOperation() {
 		Random rand = new Random();
 		HashOperation selected = CONSTANTS.opList[rand.nextInt(CONSTANTS.opList.length)];
