@@ -8,18 +8,6 @@ import java.util.Scanner;
 
 public class MSC_LONGS_MAIN {
 	public static void main(String[] args) {
-		Random rand = new Random();
-		RandomFunctionBuilder rfb = new RandomFunctionBuilder(1600,50);
-		String parameterString = rfb.genFuncString();
-		RoundFunction f = new ModularRoundFunction(1600, parameterString);
-		ModularSpongeConstruction_Longs msc = new ModularSpongeConstruction_Longs(265, 1600-265, 1600, f);
-		long[] message = new long[25];
-		for(int i = 0; i < 25; i++) {
-			message[i] = rand.nextLong();
-		}
-		msc.spongeAbsorb(message);
-		System.out.println(msc.spongeSqueeze(1));
-		System.out.println(f.getFunc());
 		
 		
 		
@@ -103,7 +91,7 @@ public class MSC_LONGS_MAIN {
 				final int messageLenLongs = 4;
 				final int funcCount = _funcCount;
 				final int stateSize = 1600;
-				final int rate = 320;
+				final int rate = 256;
 				final int capacity = 1600-rate;
 				final double populationDieOffPercent = _populationDieOffPercent; //A higher value is more selective and less diverse, a lower value is the opposite
 				final double mutationChance = _mutationChance;	//A higher value will increase the chance of random mutation in offspring
