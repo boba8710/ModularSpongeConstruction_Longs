@@ -9,7 +9,8 @@ public class LROT extends HashOperation {
 
 	public long[] run(long[] state, String parameters) {
 		String[] paramArray = parameters.split(",");
-		state[Integer.parseInt(paramArray[0])] = state[Integer.parseInt(paramArray[0])]<<Integer.parseInt(paramArray[1]);
+		state[Integer.parseInt(paramArray[0])] = Long.rotateLeft(state[Integer.parseInt(paramArray[0])],Integer.parseInt(paramArray[1]));
+
 		return state;
 	}
 

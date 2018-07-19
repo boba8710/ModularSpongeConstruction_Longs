@@ -11,7 +11,8 @@ public class RandomFunctionBuilder {
 		this.stateSize = stateSize;
 		this.funcCount = funcCount;
 	}
-	public RandomFunctionBuilder() {
+	public RandomFunctionBuilder(int stateSize) {
+		this.stateSize = stateSize;
 	}
 	public String genRandOperation() {
 		Random rand = new Random();

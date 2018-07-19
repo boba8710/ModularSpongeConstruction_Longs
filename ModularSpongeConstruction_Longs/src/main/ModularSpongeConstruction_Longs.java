@@ -20,7 +20,7 @@ public class ModularSpongeConstruction_Longs {
 		
 		this.capacity = capacity;
 		assert capacity % CONSTANTS.longSize == 0;
-		this.capacity = capacity/CONSTANTS.longSize;
+		this.capacityLongs = capacity/CONSTANTS.longSize;
 		assert rate+capacity == stateSize;
 		this.stateSize = stateSize;
 		this.state = new long[stateSize/CONSTANTS.longSize];
@@ -30,7 +30,6 @@ public class ModularSpongeConstruction_Longs {
 		this.f = f;
 	}
 	private void xorIntoState(long[] messageRateChunk) {
-		System.out.println(rateLongs);
 		for(int i = 0; i < rateLongs; i++) {
 			state[i]=state[i]^messageRateChunk[i];
 		}

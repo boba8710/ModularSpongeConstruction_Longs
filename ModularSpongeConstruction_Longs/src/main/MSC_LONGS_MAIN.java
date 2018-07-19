@@ -9,9 +9,33 @@ import java.util.Scanner;
 public class MSC_LONGS_MAIN {
 	public static void main(String[] args) {
 		
+		Random rand = new Random();
+		GeneticHelperMethods ghm1 = new GeneticHelperMethods();
+		RandomFunctionBuilder rfb = new RandomFunctionBuilder(1600,120);
+		String funcString = rfb.genFuncString();
+		RoundFunction f1 = new ModularRoundFunction(1600, funcString);
+		ModularSpongeConstruction_Longs msc = new ModularSpongeConstruction_Longs(256, 1600-256, 1600, f1);
 		
+		System.out.println(funcString);
 		
-		
+		long[] message = new long[25];
+		long[] messageFlipped = new long[25];
+		for(int i = 0; i<25; i++) {
+			message[i] = rand.nextLong();
+			
+		}
+		messageFlipped = ghm1.flipRand(message);
+		msc.spongeAbsorb(message);
+		String s1 = msc.spongeSqueeze(1);
+		System.out.println(s1);
+		msc.spongePurge();
+		msc.spongeAbsorb(messageFlipped);
+		String s2 = msc.spongeSqueeze(1);
+		System.out.println(s2);
+		System.out.println(ghm1.bitchange(s1, s2));
+		if(true) {
+			return;
+		}
 		//Direct port of STRINGS GA code
 		
 		//CONFIGURATION
@@ -21,7 +45,7 @@ public class MSC_LONGS_MAIN {
 				double _mutationChance = 0.34;	//A higher value will increase the chance of random mutation in offspring
 				int _preserveTopNIndividuals = 4;
 				int _generationCount = 100;
-				int _aggressiveThreshold = 25;
+				int _aggressiveThreshold = 100;
 				//adding -p will enable parameter entry
 				try {
 					if(args[0].equals("-p")) {
@@ -106,21 +130,16 @@ public class MSC_LONGS_MAIN {
 				ModularRoundFunction[] functionPop = new ModularRoundFunction[popSize];
 				ModularSpongeConstruction_Longs[] spongeArray = new ModularSpongeConstruction_Longs[popSize];
 				ModularSpongeConstruction_Longs[] spongeArrayReserve = new ModularSpongeConstruction_Longs[popSize];
-				long[][] messages = new long[messageLenLongs][messageCount];
-				long[][] messagesFlipped = new long[messageLenLongs][messageCount];
+				long[][] messages = new long[messageCount][messageLenLongs];
+				long[][] messagesFlipped = new long[messageCount][messageLenLongs];
 				for(int i = 0; i < functionPop.length; i++) {
 					//System.out.println(i+":");
 					functionStringPop[i] = functionBuilder.genFuncString();
 					functionPop[i] = new ModularRoundFunction(stateSize, functionStringPop[i]);
-					spongeArray[i] = new ModularSpongeConstruction_Longs(stateSize,rate,capacity, functionPop[i]);
+					spongeArray[i] = new ModularSpongeConstruction_Longs(rate,capacity,stateSize, functionPop[i]);
 				}
-				
 				//GENERATION OF MESSAGE SET
 				GeneticHelperMethods ghm = new GeneticHelperMethods();
-				for(int i = 0; i < messages.length; i++) {
-					messages[i]=ghm.generateMersenneRandomString(messageLenLongs);
-					messagesFlipped[i]=ghm.flipRand(messages[i]);
-				}
 				System.out.println("Population ready, running generations...");
 				double[] topScores = new double[generationCount];
 				double[] topBitchange = new double[generationCount];

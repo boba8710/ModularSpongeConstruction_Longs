@@ -95,7 +95,7 @@ public class GeneticHelperMethods {
 	public String mutateRoundFunction(String roundFunction, double mutationChance) {
 		String[] operationArray = roundFunction.split("#");
 		Random mutationRandomGenerator = new Random();
-		RandomFunctionBuilder rfb = new RandomFunctionBuilder();
+		RandomFunctionBuilder rfb = new RandomFunctionBuilder(ModularSpongeConstruction_Longs.stateSize);
 		double rand = mutationRandomGenerator.nextDouble();
 		for(int i =0 ;i < operationArray.length; i++) {
 			if(rand < mutationChance) {
@@ -155,7 +155,7 @@ public class GeneticHelperMethods {
 		for(int breedingIteration = 0 ; iterator < population.length; breedingIteration++) {
 			for(int i = topIndividuals.length-2; i >= 0; i-=2) {
 				
-				newPopulation[iterator] = new ModularSpongeConstruction_Longs(ModularSpongeConstruction_Longs.stateSize, ModularSpongeConstruction_Longs.rate, ModularSpongeConstruction_Longs.capacity, new ModularRoundFunction(ModularSpongeConstruction_Longs.stateSize, crossoverRoundFunction(topIndividuals[i].f.getFunc(),topIndividuals[(i+1+breedingIteration)%topIndividuals.length].f.getFunc(), mutationChance)));
+				newPopulation[iterator] = new ModularSpongeConstruction_Longs(ModularSpongeConstruction_Longs.rate, ModularSpongeConstruction_Longs.capacity, ModularSpongeConstruction_Longs.stateSize, new ModularRoundFunction(ModularSpongeConstruction_Longs.stateSize, crossoverRoundFunction(topIndividuals[i].f.getFunc(),topIndividuals[(i+1+breedingIteration)%topIndividuals.length].f.getFunc(), mutationChance)));
 				iterator++;
 			}
 		}
@@ -170,7 +170,7 @@ public class GeneticHelperMethods {
 		ModularSpongeConstruction_Longs[] newPopulation = new ModularSpongeConstruction_Longs[population.length];
 		ModularSpongeConstruction_Longs topIndividual = population[population.length-1];
 		for(int i = newPopulation.length-2; i >= 0; i--) {
-			newPopulation[i] = new ModularSpongeConstruction_Longs(ModularSpongeConstruction_Longs.stateSize, ModularSpongeConstruction_Longs.rate, ModularSpongeConstruction_Longs.capacity, new ModularRoundFunction(ModularSpongeConstruction_Longs.stateSize, mutateRoundFunction(topIndividual.f.getFunc(),0.50)));
+			newPopulation[i] = new ModularSpongeConstruction_Longs(ModularSpongeConstruction_Longs.rate, ModularSpongeConstruction_Longs.capacity, ModularSpongeConstruction_Longs.stateSize,  new ModularRoundFunction(ModularSpongeConstruction_Longs.stateSize, mutateRoundFunction(topIndividual.f.getFunc(),0.50)));
 		}
 		for(int i = 0; i <  population.length; i++){
 			if(!(i > population.length-2)){
