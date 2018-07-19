@@ -10,29 +10,26 @@ public class MSC_LONGS_MAIN {
 	public static void main(String[] args) {
 		
 		Random rand = new Random();
-		GeneticHelperMethods ghm1 = new GeneticHelperMethods();
-		RandomFunctionBuilder rfb = new RandomFunctionBuilder(1600,40);
-		String funcString = rfb.genFuncString();
-		RoundFunction f1 = new ModularRoundFunction(1600, funcString);
-		ModularSpongeConstruction_Longs msc = new ModularSpongeConstruction_Longs(256, 1600-256, 1600, f1);
+//		GeneticHelperMethods ghm1 = new GeneticHelperMethods();
+//		RandomFunctionBuilder rfb = new RandomFunctionBuilder(1600,40);
+//		String funcString = "XOR21,10#LRO9,20#LRO11,23#XOR19,2#XOR6,18#LRO14,29#XOR6,12#XOR22,15#XOR24,23#LRO11,48#XOR21,23#XOR8,1#XOR4,13#XOR2,21#LRO9,12#XOR11,24#XOR7,12#XOR7,16#XOR4,18#XOR11,19#XOR2,22#LRO12,34#XOR2,20#XOR23,6#XOR12,4#LRO20,25#LRO7,34#XOR8,0#LRO5,29#XOR18,5#XOR11,23#XOR22,7#LRO18,44#XOR19,12#XOR1,13#LRO22,21#LRO10,48#XOR8,22#XOR0,19#XOR24,22#";
+//		RoundFunction f1 = new ModularRoundFunction(1600, funcString);
+//		ModularSpongeConstruction_Longs msc = new ModularSpongeConstruction_Longs(256, 1600-256, 1600, f1);
+//		
+//		System.out.println(funcString);
+//		
+//		long[] message = new long[25];
+//		long[] messageFlipped = new long[25];
+//		for(int i = 0; i<25; i++) {
+//			message[i] = rand.nextLong();
+//			
+//		}
+//		messageFlipped = ghm1.flipRand(message);
+//		msc.spongeAbsorb(message);
+//		String s1 = msc.spongeSqueeze(1);
+//		msc.spongePurge();
+//		msc.spongeAbsorb(messageFlipped);
 		
-		System.out.println(funcString);
-		
-		long[] message = new long[25];
-		long[] messageFlipped = new long[25];
-		for(int i = 0; i<25; i++) {
-			message[i] = rand.nextLong();
-			
-		}
-		messageFlipped = ghm1.flipRand(message);
-		msc.spongeAbsorb(message);
-		String s1 = msc.spongeSqueeze(1);
-		System.out.println(s1);
-		msc.spongePurge();
-		msc.spongeAbsorb(messageFlipped);
-		String s2 = msc.spongeSqueeze(1);
-		System.out.println(s2);
-		System.out.println(ghm1.bitchange(s1, s2));
 		//Direct port of STRINGS GA code
 		
 		//CONFIGURATION
@@ -147,6 +144,7 @@ public class MSC_LONGS_MAIN {
 						}
 					}
 				}
+				
 				System.out.println("Generated "+messageDifferenceCounter+" distinct messages");
 				
 				System.out.println("Population ready, running generations...");

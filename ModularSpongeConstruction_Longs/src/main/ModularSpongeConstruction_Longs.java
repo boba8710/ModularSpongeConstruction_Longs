@@ -53,10 +53,13 @@ public class ModularSpongeConstruction_Longs {
 				 while(messageArrayList.size() < rateLongs) {
 					messageArrayList.add(0L); 
 				 }
+				 for(int i = 0; i < rateLongs; i++) {
+					 messageRateChunk[i]=messageArrayList.get(i);
+				 }
 				 xorIntoState(messageRateChunk);
 				 messageArrayList.clear();
 			 }
-			 runRoundFunctionOnState();
+			 state = f.runFunction(state);
 		}
 	}
 	public String spongeSqueeze(int iterations) {
@@ -70,19 +73,16 @@ public class ModularSpongeConstruction_Longs {
 				retString+=rateChunk;
 			}
 			retString+="\n";
-			runRoundFunctionOnState();
+			state = f.runFunction(state);
 		}
 		return retString;
-	}
-	private void runRoundFunctionOnState() {
-		state = f.runFunction(state);
 	}
 	public void spongePurge(){
 		for(int i = 0 ; i < stateSize/CONSTANTS.longSize; i++) {
 			state[i]=0;
 		}
 	}
-	private void printState() {
+	void printState() {
 		System.out.print("\n{");
 		for(int i = 0; i < state.length-1; i++) {
 			System.out.print(state[i]+", ");
