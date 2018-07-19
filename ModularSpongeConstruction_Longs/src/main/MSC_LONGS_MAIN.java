@@ -11,7 +11,7 @@ public class MSC_LONGS_MAIN {
 		
 		Random rand = new Random();
 		GeneticHelperMethods ghm1 = new GeneticHelperMethods();
-		RandomFunctionBuilder rfb = new RandomFunctionBuilder(1600,120);
+		RandomFunctionBuilder rfb = new RandomFunctionBuilder(1600,40);
 		String funcString = rfb.genFuncString();
 		RoundFunction f1 = new ModularRoundFunction(1600, funcString);
 		ModularSpongeConstruction_Longs msc = new ModularSpongeConstruction_Longs(256, 1600-256, 1600, f1);
@@ -33,9 +33,6 @@ public class MSC_LONGS_MAIN {
 		String s2 = msc.spongeSqueeze(1);
 		System.out.println(s2);
 		System.out.println(ghm1.bitchange(s1, s2));
-		if(true) {
-			return;
-		}
 		//Direct port of STRINGS GA code
 		
 		//CONFIGURATION
@@ -140,6 +137,18 @@ public class MSC_LONGS_MAIN {
 				}
 				//GENERATION OF MESSAGE SET
 				GeneticHelperMethods ghm = new GeneticHelperMethods();
+				int messageDifferenceCounter = 0;
+				for(int i = 0 ; i < messageCount; i++) {
+					messages[i]=ghm.generateMersenneRandomString(messageLenLongs);
+					messagesFlipped[i]=ghm.flipRand(messages[i]);
+					for(int j = 0; j < messageLenLongs; j++) {
+						if(messages[i][j]!=messagesFlipped[i][j]) {
+							messageDifferenceCounter++;
+						}
+					}
+				}
+				System.out.println("Generated "+messageDifferenceCounter+" distinct messages");
+				
 				System.out.println("Population ready, running generations...");
 				double[] topScores = new double[generationCount];
 				double[] topBitchange = new double[generationCount];

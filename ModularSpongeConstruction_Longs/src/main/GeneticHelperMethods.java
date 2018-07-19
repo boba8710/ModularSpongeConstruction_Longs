@@ -251,7 +251,8 @@ public class GeneticHelperMethods {
 	public void scoreSingle(ModularSpongeConstruction_Longs sponge, long[][] messages, long[][] messagesFlipped, int popSize, int messageCount) {
 			double score = 0;
 			for(int j = 0; j < messages.length; j++) {
-				sponge.spongeAbsorb(messages[j]);
+				sponge.spongeAbsorb(messagesFlipped[j]);
+				System.out.println(sponge.rateLongs);
 				String h1 = sponge.spongeSqueeze(1);
 				sponge.spongePurge();
 				sponge.spongeAbsorb(messagesFlipped[j]);
