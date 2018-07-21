@@ -6,6 +6,8 @@ import java.util.Date;
 import java.util.Random;
 import java.util.Scanner;
 
+import HashOperations.HashOperation;
+
 public class MSC_LONGS_MAIN {
 	public static void main(String[] args) {
 		
@@ -33,13 +35,13 @@ public class MSC_LONGS_MAIN {
 		//Direct port of STRINGS GA code
 		
 		//CONFIGURATION
-				int _popSize = 128;
-				int _funcCount = 40;
-				double _populationDieOffPercent = 0.50; //A higher value is more selective and less diverse, a lower value is the opposite
-				double _mutationChance = 0.34;	//A higher value will increase the chance of random mutation in offspring
+				int _popSize = 256;
+				int _funcCount = 30;
+				double _populationDieOffPercent = 0.75; //A higher value is more selective and less diverse, a lower value is the opposite
+				double _mutationChance = 0.07;	//A higher value will increase the chance of random mutation in offspring
 				int _preserveTopNIndividuals = 4;
 				int _generationCount = 100;
-				int _aggressiveThreshold = 100;
+				int _aggressiveThreshold = 20;
 				//adding -p will enable parameter entry
 				try {
 					if(args[0].equals("-p")) {
@@ -101,8 +103,8 @@ public class MSC_LONGS_MAIN {
 				}catch(Exception e) {
 					
 				}
-				final double bitchangeLowerBoundAutostop = 0.4995;
-				final double bitchangeUpperBoundAutostop = 0.54;
+				final double bitchangeLowerBoundAutostop = 0.49995;
+				final double bitchangeUpperBoundAutostop = 0.5001;
 				final int popSize = _popSize;
 				final int aggressiveThreshold = _aggressiveThreshold;
 				final int messageCount = 8192;
@@ -116,6 +118,7 @@ public class MSC_LONGS_MAIN {
 				final int preserveTopNIndividuals = _preserveTopNIndividuals;
 				final int generationCount = _generationCount;
 				boolean aggressiveMode = false;
+				boolean autoStopFlag=false;
 				double[] lastScores = new double[aggressiveThreshold];
 				
 				//RANDOM GENERATION OF INITIAL POPULATION
@@ -166,6 +169,7 @@ public class MSC_LONGS_MAIN {
 							PrintWriter finalPopulationWriter = new PrintWriter("FinalRunPopulation"+runEnd.getTime()+".log");
 							PrintWriter dataWriter = new PrintWriter("RunData"+runEnd.getTime()+".csv");
 							finalPopulationWriter.println("Parameters:");
+							finalPopulationWriter.println("rounds: "+CONSTANTS.rounds);
 							finalPopulationWriter.println("popSize: "+popSize);
 							finalPopulationWriter.println("messageCount: "+messageCount);
 							finalPopulationWriter.println("messageLength: "+messageLenLongs);
@@ -177,6 +181,11 @@ public class MSC_LONGS_MAIN {
 							finalPopulationWriter.println("mutationChance: "+mutationChance);
 							finalPopulationWriter.println("preserveTopNIndividuals: "+preserveTopNIndividuals);
 							finalPopulationWriter.println("generationCount: "+generationCount);
+							finalPopulationWriter.println("Available Functions: {" );
+							for(int i = 0; i < CONSTANTS.opList.length - 1; i++) {
+								finalPopulationWriter.print(CONSTANTS.opList[i].getClass().getName()+", ");
+							}
+							finalPopulationWriter.println(CONSTANTS.opList[CONSTANTS.opList.length-1].getClass().getName()+"}");
 							for(int i = 0; i < popSize; i++){
 								finalPopulationWriter.print(Integer.toString(i)+"	:\n");
 								finalPopulationWriter.print("Fitness Score:	"+spongeArrayReserve[i].geneticScore+"\n");
@@ -257,8 +266,11 @@ public class MSC_LONGS_MAIN {
 					
 					
 					if(topBitchange[generation]<bitchangeUpperBoundAutostop&&topBitchange[generation]>bitchangeLowerBoundAutostop) {
-						System.out.println("Target bitchange detected! Autostop!");
-						break;
+						System.out.println("Target bitchange detected! Autostop flag set!");
+						if(autoStopFlag) {
+							break;
+						}
+						autoStopFlag = true;
 					}
 					
 				}
