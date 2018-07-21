@@ -1,12 +1,12 @@
 package main;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.Random;
 import java.util.Scanner;
-
-import HashOperations.HashOperation;
 
 public class MSC_LONGS_MAIN {
 	public static void main(String[] args) {
@@ -41,7 +41,7 @@ public class MSC_LONGS_MAIN {
 				double _mutationChance = 0.07;	//A higher value will increase the chance of random mutation in offspring
 				int _preserveTopNIndividuals = 4;
 				int _generationCount = 100;
-				int _aggressiveThreshold = 20;
+				int _aggressiveThreshold = 10;
 				//adding -p will enable parameter entry
 				try {
 					if(args[0].equals("-p")) {
@@ -77,14 +77,15 @@ public class MSC_LONGS_MAIN {
 						System.out.println("Error: usage of -rs flag is Configurable_GA.jar -rs functionString iterations");
 					}
 						return;
-					}else if(args[0].equals("-rh")) {
+					}*/else if(args[0].equals("-rh")) {
 						try {
-							generateTestRandDataHash(args[1], Integer.parseInt(args[2]));
+							generateTestRandDataHash(args[1], Integer.parseInt(args[2]), Integer.parseInt(args[3]));
 						}catch (Exception e){
-							System.out.println("Error: usage of -rh flag is Configurable_GA.jar -rh functionString iterations");
+							e.printStackTrace();
+							System.out.println("Error: usage of -rh flag is Configurable_GA.jar -rh functionString iterations rounds");
 						}
 						return;
-					}else if(args[0].equals("-rhb")) {
+					}/*else if(args[0].equals("-rhb")) {
 						try {
 							generateTestRandDataHashBinary(args[1], Integer.parseInt(args[2]));
 						}catch (Exception e){
@@ -96,7 +97,7 @@ public class MSC_LONGS_MAIN {
 						System.out.println("-p : start a parameterized run of the GA");
 						System.out.println("-t functionString : test the function described by functionString");
 						System.out.println("-rs functionString iterations : generate pseudorandom data from function described by functionString by XOF, squeezing [iterations] times");
-						System.out.println("-rh functionString iterations : generate pseudorandom data from function described by functionString using hashing of low entropy inputs, outputs [iterations] hashes");
+						System.out.println("-rh functionString iterations rounds : generate pseudorandom data from function described by functionString using hashing of low entropy inputs, outputs [iterations] hashes");
 						System.out.println("-rhb functionString iterations : generate pseudorandom data from function described by functionString using hashing of low entropy inputs, outputs [iterations] hashes. Output stored as binary data.");
 						
 					}
@@ -110,10 +111,11 @@ public class MSC_LONGS_MAIN {
 				final int messageCount = 8192;
 				final int messageLenLongs = 4;
 				final int funcCount = _funcCount;
-				final int stateSize = 1600;
-				final int rate = 256;
-				final int capacity = 1600-rate;
+				final int stateSize = CONSTANTS.stateSize;
+				final int rate = CONSTANTS.rate;
+				final int capacity = CONSTANTS.capacity;
 				final double populationDieOffPercent = _populationDieOffPercent; //A higher value is more selective and less diverse, a lower value is the opposite
+				final double populationDieOffPercentAggressive = 0.875;
 				final double mutationChance = _mutationChance;	//A higher value will increase the chance of random mutation in offspring
 				final int preserveTopNIndividuals = _preserveTopNIndividuals;
 				final int generationCount = _generationCount;
@@ -233,11 +235,17 @@ public class MSC_LONGS_MAIN {
 						}
 						if(lastScores[0]*aggressiveThreshold==scoreTotal) {
 							aggressiveMode = true;
-							System.out.println("Stagnant run detected, breaking");
-							System.exit(1);
+							incrementedMutationChance+=0.01;
+							if(incrementedMutationChance == 0.99) {
+								incrementedMutationChance = mutationChance;
+							}
+							System.out.println("!!!AGGRESSIVE GROWTH ENGAGED!!!");
+							System.out.println("Raising mutation constant to "+incrementedMutationChance*100+"%");
+							System.out.println("Population die-off now set to: "+populationDieOffPercentAggressive*100+"%");
 						}else {
 							if(aggressiveMode) {
 								aggressiveMode = false;
+								incrementedMutationChance = mutationChance;
 								System.out.println("!!!AGGRESSIVE GROWTH DISENGAGED!!!");
 							}
 						}
@@ -248,16 +256,15 @@ public class MSC_LONGS_MAIN {
 					System.out.println("Generation runtime: "+ghm.millisToTimestamp(endTime-startTime));
 					System.out.println("Average individual runtime:	"+ghm.millisToTimestamp((long)((endTime-startTime)/popSize)));
 					System.out.println("Best of gen:	"+spongeArray[popSize-1].geneticScore);
-					System.out.println("Max bitchange(+/-):	"+(0.50-(1/spongeArray[popSize-1].geneticScore)));
+					System.out.println("Max bitchange(+/-):	"+spongeArray[popSize-1].bitchangeScore);
+					System.out.println("Top Function: ");
+					System.out.println("			"+spongeArray[popSize-1].f.getFunc());
 					topScores[generation] = spongeArray[popSize-1].geneticScore;
 					topBitchange[generation] = spongeArray[popSize-1].bitchangeScore;
 					System.out.println("Projected remaining runtime: "+ghm.millisToTimestamp((long)(endTime-startTime)*(generationCount-generation)));
 					if(aggressiveMode) {
-						incrementedMutationChance+=0.01;
-						if(incrementedMutationChance == 1) {
-							incrementedMutationChance = mutationChance;
-						}
-						ghm.runGenerationOnSortedPopulation(spongeArray, populationDieOffPercent,incrementedMutationChance, preserveTopNIndividuals);
+						System.out.println("!!!RUNNING AGGRESSIVE GENERATION!!!");
+						ghm.runGenerationOnSortedPopulation(spongeArray, populationDieOffPercentAggressive,incrementedMutationChance, preserveTopNIndividuals);
 						
 					}else {
 						incrementedMutationChance = mutationChance;
@@ -287,5 +294,40 @@ public class MSC_LONGS_MAIN {
 					spongeArrayReserve[i] = spongeArray[i];
 				}
 		
+	}
+	static void generateTestRandDataHash(String function, int iterations, int rounds) {
+		CONSTANTS.rounds = rounds;
+		ModularSpongeConstruction_Longs testingFunc = new ModularSpongeConstruction_Longs(CONSTANTS.rate, CONSTANTS.capacity, CONSTANTS.stateSize, new ModularRoundFunction(CONSTANTS.stateSize, function));
+		System.out.println("Hashing...");
+		String outStr = "";
+		for(int i = 0 ; i < iterations; i++) {
+			ArrayList<Long> messageArrList = new ArrayList<Long>();
+			messageArrList.add(0L);
+			for(int j = 0; j < i; j++) {
+				messageArrList.add(0b0000000011111111000000001111111100000000111111110000000011111111L);
+			}
+			long[] message = new long[messageArrList.size()];
+			for(int j = 0; j < messageArrList.size(); j++){
+				message[j]=messageArrList.get(j);
+			}
+			testingFunc.spongeAbsorb(message);
+			String hashStr = testingFunc.spongeSqueeze(1);
+			
+			for(int unused = 0; unused < CONSTANTS.rate/8; unused++){
+				outStr += (char)Integer.parseInt(hashStr.substring(0, 8), 2);
+				hashStr = hashStr.substring(8);
+			}
+			testingFunc.spongePurge();
+		}
+		System.out.println("Printing...");
+		PrintWriter hashFileWriter;
+		try {
+			hashFileWriter = new PrintWriter("Hash_Output.txt");
+			hashFileWriter.print(outStr);
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		System.out.println("Done, saved to Hash_Output.txt");
 	}
 }
