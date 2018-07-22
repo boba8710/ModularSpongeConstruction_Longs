@@ -188,7 +188,7 @@ public class GeneticHelperMethods {
 	}
 	
 	//Credit for the majority of this method goes to mkyong (www.mkyong.com)
-	public String millisToTimestamp(long milliseconds){
+	public static String millisToTimestamp(long milliseconds){
 		long secondsInMilli = 1000;
 		long minutesInMilli = secondsInMilli * 60;
 		long hoursInMilli = minutesInMilli * 60;

@@ -11,8 +11,7 @@ populationDieOffPercent: 0.75
 mutationChance: 0.07
 preserveTopNIndividuals: 4
 generationCount: 100
-Available Functions: {
-HashOperations.ADD, HashOperations.AND, HashOperations.LROT, HashOperations.XOR}
+Available Functions: {HashOperations.ADD, HashOperations.AND, HashOperations.LROT, HashOperations.XOR}
 0	:
 Fitness Score:	2.0043164303292538
 Bitchange:	0.0010767836515077785

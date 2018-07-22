@@ -1,8 +1,11 @@
 package main;
 
+import java.io.DataOutputStream;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.sql.Time;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Random;
@@ -41,7 +44,7 @@ public class MSC_LONGS_MAIN {
 				double _mutationChance = 0.07;	//A higher value will increase the chance of random mutation in offspring
 				int _preserveTopNIndividuals = 4;
 				int _generationCount = 100;
-				int _aggressiveThreshold = 10;
+				int _aggressiveThreshold = 20;
 				//adding -p will enable parameter entry
 				try {
 					if(args[0].equals("-p")) {
@@ -85,6 +88,14 @@ public class MSC_LONGS_MAIN {
 							System.out.println("Error: usage of -rh flag is Configurable_GA.jar -rh functionString iterations rounds");
 						}
 						return;
+					}else if(args[0].equals("-rhc")) {
+						try {
+							generateTestRandDataHashChars(args[1], Integer.parseInt(args[2]), Integer.parseInt(args[3]));
+						}catch (Exception e){
+							e.printStackTrace();
+							System.out.println("Error: usage of -rhc flag is Configurable_GA.jar -rh functionString iterations rounds");
+						}
+						return;
 					}/*else if(args[0].equals("-rhb")) {
 						try {
 							generateTestRandDataHashBinary(args[1], Integer.parseInt(args[2]));
@@ -98,14 +109,14 @@ public class MSC_LONGS_MAIN {
 						System.out.println("-t functionString : test the function described by functionString");
 						System.out.println("-rs functionString iterations : generate pseudorandom data from function described by functionString by XOF, squeezing [iterations] times");
 						System.out.println("-rh functionString iterations rounds : generate pseudorandom data from function described by functionString using hashing of low entropy inputs, outputs [iterations] hashes");
-						System.out.println("-rhb functionString iterations : generate pseudorandom data from function described by functionString using hashing of low entropy inputs, outputs [iterations] hashes. Output stored as binary data.");
+						System.out.println("-rhc functionString iterations : generate pseudorandom data from function described by functionString using hashing of low entropy inputs, outputs [iterations] hashes. Output stored as chars.");
 						
 					}
 				}catch(Exception e) {
 					
 				}
 				final double bitchangeLowerBoundAutostop = 0.49995;
-				final double bitchangeUpperBoundAutostop = 0.5001;
+				final double bitchangeUpperBoundAutostop = 0.50005;
 				final int popSize = _popSize;
 				final int aggressiveThreshold = _aggressiveThreshold;
 				final int messageCount = 8192;
@@ -258,7 +269,7 @@ public class MSC_LONGS_MAIN {
 					System.out.println("Best of gen:	"+spongeArray[popSize-1].geneticScore);
 					System.out.println("Max bitchange(+/-):	"+spongeArray[popSize-1].bitchangeScore);
 					System.out.println("Top Function: ");
-					System.out.println("			"+spongeArray[popSize-1].f.getFunc());
+					System.out.println("			"+spongeArray[popSize-1]);
 					topScores[generation] = spongeArray[popSize-1].geneticScore;
 					topBitchange[generation] = spongeArray[popSize-1].bitchangeScore;
 					System.out.println("Projected remaining runtime: "+ghm.millisToTimestamp((long)(endTime-startTime)*(generationCount-generation)));
@@ -298,8 +309,6 @@ public class MSC_LONGS_MAIN {
 	static void generateTestRandDataHash(String function, int iterations, int rounds) {
 		CONSTANTS.rounds = rounds;
 		ModularSpongeConstruction_Longs testingFunc = new ModularSpongeConstruction_Longs(CONSTANTS.rate, CONSTANTS.capacity, CONSTANTS.stateSize, new ModularRoundFunction(CONSTANTS.stateSize, function));
-		System.out.println("Hashing...");
-		String outStr = "";
 		for(int i = 0 ; i < iterations; i++) {
 			ArrayList<Long> messageArrList = new ArrayList<Long>();
 			messageArrList.add(0L);
@@ -313,21 +322,51 @@ public class MSC_LONGS_MAIN {
 			testingFunc.spongeAbsorb(message);
 			String hashStr = testingFunc.spongeSqueeze(1);
 			
-			for(int unused = 0; unused < CONSTANTS.rate/8; unused++){
-				outStr += (char)Integer.parseInt(hashStr.substring(0, 8), 2);
-				hashStr = hashStr.substring(8);
+			System.out.println(hashStr);
+			testingFunc.spongePurge();
+		}
+	}
+	static void generateTestRandDataHashChars(String function, int iterations, int rounds) throws NumberFormatException, IOException {
+		Date hashingStartTime = new Date();
+		long startTime = hashingStartTime.getTime();
+		CONSTANTS.rounds = rounds;
+		ModularSpongeConstruction_Longs testingFunc = new ModularSpongeConstruction_Longs(CONSTANTS.rate, CONSTANTS.capacity, CONSTANTS.stateSize, new ModularRoundFunction(CONSTANTS.stateSize, function));
+		System.out.println("Hashing...");
+		long msg = 0L;
+		int newLongCutoff = 65536/2;
+		long[] message;
+		if(iterations>newLongCutoff){
+			message = new long[(iterations/newLongCutoff)+1];
+		}else{
+			message = new long[(newLongCutoff/iterations)+1];
+		}
+		FileOutputStream fileOutputStream = new FileOutputStream("Hash_Char_Output.bin");
+		DataOutputStream dos = new DataOutputStream(fileOutputStream);
+		int messageIterator = 0;
+		for(int i = 0 ; i < iterations; i++) {
+			System.out.println(((double)i/(double)iterations)*100+"%");
+			
+			message[messageIterator]=msg;
+			msg++;
+			if(msg%newLongCutoff==0){
+				messageIterator++;
+				message[messageIterator]=0L;
+			}
+			testingFunc.spongeAbsorb(message);
+			String hashStr = testingFunc.spongeSqueeze(1);
+			
+			for(int unused = 0; unused < CONSTANTS.rate/32; unused++){
+				dos.writeInt(Integer.parseUnsignedInt(hashStr.substring(0, 32), 2));
+				hashStr = hashStr.substring(32);
 			}
 			testingFunc.spongePurge();
 		}
-		System.out.println("Printing...");
-		PrintWriter hashFileWriter;
-		try {
-			hashFileWriter = new PrintWriter("Hash_Output.txt");
-			hashFileWriter.print(outStr);
-		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		System.out.println("Done, saved to Hash_Output.txt");
+		dos.close();
+		Date hashingEndTime = new Date();
+		long endTime = hashingEndTime.getTime();
+		String timeStamp = GeneticHelperMethods.millisToTimestamp(endTime-startTime);
+		System.out.println("Hashed "+CONSTANTS.rate*iterations/8+" Bytes in:"+timeStamp);
+		System.out.println("For a throughput of: "+(double)(CONSTANTS.rate*iterations/8)/(double)(endTime-startTime)+" bit/s");
+		System.out.println("Done, saved to Hash_Char_Output.txt");
 	}
 }
