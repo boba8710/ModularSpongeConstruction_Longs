@@ -330,7 +330,7 @@ public class MSC_LONGS_MAIN {
 		Date hashingStartTime = new Date();
 		long startTime = hashingStartTime.getTime();
 		CONSTANTS.rounds = rounds;
-		ModularSpongeConstruction_Longs testingFunc = new ModularSpongeConstruction_Longs(CONSTANTS.rate, CONSTANTS.capacity, CONSTANTS.stateSize, new ModularRoundFunction(CONSTANTS.stateSize, function));
+		ModularSpongeConstruction_Longs testingFunc = new ModularSpongeConstruction_Longs(CONSTANTS.rate, CONSTANTS.capacity, CONSTANTS.stateSize, new GlassFunction(CONSTANTS.stateSize));
 		System.out.println("Hashing...");
 		long msg = 0L;
 		int newLongCutoff = 65536/2;
@@ -344,7 +344,7 @@ public class MSC_LONGS_MAIN {
 		DataOutputStream dos = new DataOutputStream(fileOutputStream);
 		int messageIterator = 0;
 		for(int i = 0 ; i < iterations; i++) {
-			System.out.println(((double)i/(double)iterations)*100+"%");
+			//System.out.println(((double)i/(double)iterations)*100+"%");
 			
 			message[messageIterator]=msg;
 			msg++;
@@ -365,8 +365,8 @@ public class MSC_LONGS_MAIN {
 		Date hashingEndTime = new Date();
 		long endTime = hashingEndTime.getTime();
 		String timeStamp = GeneticHelperMethods.millisToTimestamp(endTime-startTime);
-		System.out.println("Hashed "+CONSTANTS.rate*iterations/8+" Bytes in:"+timeStamp);
-		System.out.println("For a throughput of: "+(double)(CONSTANTS.rate*iterations/8)/(double)(endTime-startTime)+" bit/s");
+		System.out.println("Hashed "+(double)(CONSTANTS.rate*iterations)/(double)(8*1000000)+" Megabytes in:"+timeStamp);
+		System.out.println("For a throughput of: "+(double)(CONSTANTS.rate*iterations/(double)(8*1000000))*1000/(double)(endTime-startTime)+" Megabytes/s");
 		System.out.println("Done, saved to Hash_Char_Output.txt");
 	}
 }
