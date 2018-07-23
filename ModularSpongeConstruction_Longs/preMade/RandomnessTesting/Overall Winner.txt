@@ -1,0 +1,55 @@
+Function Glass
+
+Applied for 7 rounds
+
+252	:
+Fitness Score:	1275.193216231607
+Bitchange:	0.49921580511308306
+Round Function:
+XOR3,1#LRO0,37#LRO0,37#ADD3,4266968414311524662#AND6,24#LRO1,35#XOR20,23#XOR12,15#LRO3,25#ADD0,2548774367665783085#XOR4,2#AND11,5#XOR0,4#XOR2,3#XOR1,0#AND18,22#XOR17,2#AND16,2#LRO2,16#LRO1,24#LRO1,17#AND15,4#XOR1,2#XOR2,0#LRO0,47#LRO16,14#ADD1,3004493702170732358#LRO9,9#ADD19,3869881997244444665#XOR0,1#
+=================================================================
+
+ENT Testing for 1MB of hashed data
+
+Entropy = 7.999815 bits per byte.
+
+Optimum compression would reduce the size
+of this 1024000 byte file by 0 percent.
+
+Chi square distribution for 1024000 samples is 262.79, and randomly
+would exceed this value 35.54 percent of the times.
+
+Arithmetic mean value of data bytes is 127.5514 (127.5 = random).
+Monte Carlo value for Pi is 3.137051317 (error 0.14 percent).
+Serial correlation coefficient is -0.001587 (totally uncorrelated = 0.0).
+
+
+
+ENT Testing for 100MB of hashed data
+Entropy = 7.999998 bits per byte.
+
+Optimum compression would reduce the size
+of this 102400000 byte file by 0 percent.
+
+Chi square distribution for 102400000 samples is 232.57, and randomly
+would exceed this value 83.99 percent of the times.
+
+Arithmetic mean value of data bytes is 127.4968 (127.5 = random).
+Monte Carlo value for Pi is 3.142087857 (error 0.02 percent).
+Serial correlation coefficient is -0.000019 (totally uncorrelated = 0.0).
+
+
+
+Random Data control: Random.org June 1st 2018 sample
+Entropy = 7.999818 bits per byte.
+
+Optimum compression would reduce the size
+of this 1048576 byte file by 0 percent.
+
+Chi square distribution for 1048576 samples is 265.22, and randomly
+would exceed this value 31.70 percent of the times.
+
+Arithmetic mean value of data bytes is 127.5700 (127.5 = random).
+Monte Carlo value for Pi is 3.143932892 (error 0.07 percent).
+Serial correlation coefficient is 0.000614 (totally uncorrelated = 0.0).
+
