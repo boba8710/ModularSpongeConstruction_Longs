@@ -13,29 +13,8 @@ import java.util.Scanner;
 
 public class MSC_LONGS_MAIN {
 	public static void main(String[] args) {
-		
+		assert CONSTANTS.stateSize == 1600;
 		Random rand = new Random();
-//		GeneticHelperMethods ghm1 = new GeneticHelperMethods();
-//		RandomFunctionBuilder rfb = new RandomFunctionBuilder(1600,40);
-//		String funcString = "XOR21,10#LRO9,20#LRO11,23#XOR19,2#XOR6,18#LRO14,29#XOR6,12#XOR22,15#XOR24,23#LRO11,48#XOR21,23#XOR8,1#XOR4,13#XOR2,21#LRO9,12#XOR11,24#XOR7,12#XOR7,16#XOR4,18#XOR11,19#XOR2,22#LRO12,34#XOR2,20#XOR23,6#XOR12,4#LRO20,25#LRO7,34#XOR8,0#LRO5,29#XOR18,5#XOR11,23#XOR22,7#LRO18,44#XOR19,12#XOR1,13#LRO22,21#LRO10,48#XOR8,22#XOR0,19#XOR24,22#";
-//		RoundFunction f1 = new ModularRoundFunction(1600, funcString);
-//		ModularSpongeConstruction_Longs msc = new ModularSpongeConstruction_Longs(256, 1600-256, 1600, f1);
-//		
-//		System.out.println(funcString);
-//		
-//		long[] message = new long[25];
-//		long[] messageFlipped = new long[25];
-//		for(int i = 0; i<25; i++) {
-//			message[i] = rand.nextLong();
-//			
-//		}
-//		messageFlipped = ghm1.flipRand(message);
-//		msc.spongeAbsorb(message);
-//		String s1 = msc.spongeSqueeze(1);
-//		msc.spongePurge();
-//		msc.spongeAbsorb(messageFlipped);
-		
-		//Direct port of STRINGS GA code
 		
 		//CONFIGURATION
 				int _popSize = 256;
@@ -146,7 +125,7 @@ public class MSC_LONGS_MAIN {
 					//System.out.println(i+":");
 					functionStringPop[i] = functionBuilder.genFuncString();
 					functionPop[i] = new ModularRoundFunction(stateSize, functionStringPop[i]);
-					spongeArray[i] = new ModularSpongeConstruction_Longs(rate,capacity,stateSize, functionPop[i]);
+					spongeArray[i] = new ModularSpongeConstruction_Longs(rate,capacity,stateSize, functionPop[i], CONSTANTS.hashLength);
 				}
 				//GENERATION OF MESSAGE SET
 				GeneticHelperMethods ghm = new GeneticHelperMethods();
@@ -308,7 +287,7 @@ public class MSC_LONGS_MAIN {
 	}
 	static void generateTestRandDataHash(String function, int iterations, int rounds) {
 		CONSTANTS.rounds = rounds;
-		ModularSpongeConstruction_Longs testingFunc = new ModularSpongeConstruction_Longs(CONSTANTS.rate, CONSTANTS.capacity, CONSTANTS.stateSize, new ModularRoundFunction(CONSTANTS.stateSize, function));
+		ModularSpongeConstruction_Longs testingFunc = new ModularSpongeConstruction_Longs(CONSTANTS.rate, CONSTANTS.capacity, CONSTANTS.stateSize, new ModularRoundFunction(CONSTANTS.stateSize, function), CONSTANTS.hashLength);
 		for(int i = 0 ; i < iterations; i++) {
 			ArrayList<Long> messageArrList = new ArrayList<Long>();
 			messageArrList.add(0L);
@@ -330,7 +309,7 @@ public class MSC_LONGS_MAIN {
 		Date hashingStartTime = new Date();
 		long startTime = hashingStartTime.getTime();
 		CONSTANTS.rounds = rounds;
-		ModularSpongeConstruction_Longs testingFunc = new ModularSpongeConstruction_Longs(CONSTANTS.rate, CONSTANTS.capacity, CONSTANTS.stateSize, new GlassFunction(CONSTANTS.stateSize));
+		ModularSpongeConstruction_Longs testingFunc = new ModularSpongeConstruction_Longs(CONSTANTS.rate, CONSTANTS.capacity, CONSTANTS.stateSize, new GlassFunction(CONSTANTS.stateSize), CONSTANTS.hashLength);
 		System.out.println("Hashing...");
 		long msg = 0L;
 		int newLongCutoff = 65536/2;

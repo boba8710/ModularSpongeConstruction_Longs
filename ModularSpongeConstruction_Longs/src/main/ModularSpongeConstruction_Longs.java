@@ -5,15 +5,17 @@ import main.CONSTANTS;
 
 public class ModularSpongeConstruction_Longs {
 	long[] state;
-	int rateLongs;
 	static int rate;
 	static int stateSize;
 	static int capacity;
+	static int hashLength;
+	int rateLongs;
 	int capacityLongs;
+	int hashLenLongs;
 	double geneticScore;
 	double bitchangeScore;
 	RoundFunction f;
-	ModularSpongeConstruction_Longs(int rate, int capacity, int stateSize, RoundFunction f){
+	ModularSpongeConstruction_Longs(int rate, int capacity, int stateSize, RoundFunction f, int hashLength){
 		this.rate = rate;
 		assert rate % CONSTANTS.longSize == 0;
 		this.rateLongs = rate/CONSTANTS.longSize;
@@ -28,6 +30,8 @@ public class ModularSpongeConstruction_Longs {
 			state[i]=0;
 		}
 		this.f = f;
+		this.hashLength = hashLength;
+		this.hashLenLongs = hashLength/CONSTANTS.longSize;
 	}
 	private void xorIntoState(long[] messageRateChunk) {
 		for(int i = 0; i < rateLongs; i++) {
@@ -65,12 +69,12 @@ public class ModularSpongeConstruction_Longs {
 	public String spongeSqueeze(int iterations) {
 		String retString = "";
 		for(int iteration = 0 ; iteration < iterations; iteration++) {
-			for(int i = 0 ; i < rateLongs; i++) {
-				String rateChunk=Long.toBinaryString(state[i]+(0x7ffffffffffffffL));
-				while(rateChunk.length() < 64){
-					rateChunk="0"+rateChunk;
+			for(int i = 0 ; i < hashLenLongs; i++) {
+				String hashChunk=Long.toBinaryString(state[i]+(0x7ffffffffffffffL));
+				while(hashChunk.length() < 64){
+					hashChunk="0"+hashChunk;
 				}
-				retString+=rateChunk;
+				retString+=hashChunk;
 			}
 			retString+="\n";
 			state = f.runFunction(state);
