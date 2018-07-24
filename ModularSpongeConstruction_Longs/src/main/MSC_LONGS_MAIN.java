@@ -309,7 +309,7 @@ public class MSC_LONGS_MAIN {
 		Date hashingStartTime = new Date();
 		long startTime = hashingStartTime.getTime();
 		CONSTANTS.rounds = rounds;
-		ModularSpongeConstruction_Longs testingFunc = new ModularSpongeConstruction_Longs(CONSTANTS.rate, CONSTANTS.capacity, CONSTANTS.stateSize, new GlassFunction(CONSTANTS.stateSize), CONSTANTS.hashLength);
+		ModularSpongeConstruction_Longs testingFunc = new ModularSpongeConstruction_Longs(CONSTANTS.rate, CONSTANTS.capacity, CONSTANTS.stateSize, new ModularRoundFunction(CONSTANTS.stateSize, function), CONSTANTS.hashLength);
 		System.out.println("Hashing...");
 		long msg = 0L;
 		int newLongCutoff = 65536/2;
